@@ -5,42 +5,41 @@
  * Date: 10/6/2016
  * Time: 7:58 PM
  */
-    $dbconnection = mysqli_connect('localhost','root','','widget_corp');
-
-    if (mysqli_connect_errno()){
-        die("Database Connecton failed: ".
-            mysqli_connect_error().
-            "(".mysqli_connect_errno().")");
-    }
-
+    require_once ('../includes/dbConnection.php');
     include ('../includes/layouts/header.php');
-
-    $query = "SELECT * FROM SUBJECTS WHERE visible = 1 ORDER BY position ASC";
-
-    $result = mysqli_query($dbconnection, $query);
-
-    if (!$result){
-        die("Database Query failed.");
-    }
-
     require_once ('../includes/functions.php');
+
+
+
 ?>
-
-
 
 <div id="main">
     <div id="navigation">
-        <ul>
         <?php
-        while ($subject = mysqli_fetch_assoc($result)){
+            $subjectSet = findAllSubjects();
         ?>
-
-        <li> <?php echo $subject["menu_name"]." (" .
-                $subject["id"].")";
-        ?> </li>
-        <?php
-        }
-        ?>
+        <ul class="subjects">
+            <?php
+                while ($subject = mysqli_fetch_assoc($subjectSet)){
+            ?>
+                    <li>
+                    <?php
+                    echo $subject["menu_name"];
+                    ?>
+                    <?php
+                       $pageSet = findPagesForSubject($subject["id"]);
+                    ?>
+                       <ul class="pages">
+                           <?php
+                           while ($page = mysqli_fetch_assoc($pageSet)){
+                           ?>
+                           <li><?php echo $page["menu_name"]; ?></li>
+                           <?php } ?>
+                       </ul>
+                    </li>
+            <?php
+            }
+            ?>
         </ul>
     </div>
 
@@ -54,6 +53,5 @@
 <?php
     mysqli_free_result($result);
     include ('../includes/layouts/footer.php');
-    mysqli_close($dbconnection);
 ?>
 
